@@ -24,9 +24,7 @@ def add_files_to_version(
     directory_path = os.path.join(settings.files_dir, main_dir, сhannel_dir)
 
     if not os.path.isdir(directory_path):
-        exception_msg = f"Directory {directory_path} not found!"
-        logging.exception(exception_msg)
-        return version
+        os.mkdir(directory_path)
 
     for cur in sorted(os.listdir(directory_path)):
         # skip .DS_store files
@@ -61,7 +59,7 @@ def parse_dev_channel(
     Args:
         channel: Channel model (-> dev)
         directory: Save directory
-        file_parser: The method by which the file piercing will take place (qFlipper, FileParser)
+        file_parser: The method by which the file piercing will take place (FileParser)
 
     Returns:
         New channel with added version
@@ -84,7 +82,7 @@ def parse_release_channel(
     Args:
         channel: Channel model (-> release)
         directory: Save directory
-        file_parser: The method by which the file piercing will take place (qFlipper, FileParser)
+        file_parser: The method by which the file piercing will take place (FileParser)
 
     Returns:
         New channel with added version
@@ -108,7 +106,7 @@ def parse_rc_channel(
     Args:
         channel: Channel model (-> release-candidate)
         directory: Save directory
-        file_parser: The method by which the file piercing will take place (qFlipper, FileParser)
+        file_parser: The method by which the file piercing will take place (FileParser)
 
     Returns:
         New channel with added version
@@ -127,7 +125,7 @@ def parse_github_channels(
     Method for creating a new index with channels
     Args:
         directory: Save directory
-        file_parser: The method by which the file piercing will take place (qFlipper, FileParser)
+        file_parser: The method by which the file piercing will take place (FileParser)
 
     Returns:
         New index with added channels

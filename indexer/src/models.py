@@ -1,4 +1,5 @@
 import re
+import pytz
 import hashlib
 import logging
 from pydantic import BaseModel
@@ -108,7 +109,9 @@ class IndexerGithub:
             return Version(
                 version=last_commit.sha[:8],
                 changelog="Last commit: " + last_commit.commit.message,
-                timestamp=int(last_commit.commit.author.date.timestamp()),
+                timestamp=int(
+                    pytz.utc.localize(last_commit.commit.author.date).timestamp()
+                ),
             )
         except Exception as e:
             logging.exception(e)
@@ -124,7 +127,7 @@ class IndexerGithub:
             return Version(
                 version=last_release.title,
                 changelog=last_release.body,
-                timestamp=int(last_release.created_at.timestamp()),
+                timestamp=int(pytz.utc.localize(last_release.created_at).timestamp()),
             )
         except StopIteration:
             return None
@@ -139,7 +142,7 @@ class IndexerGithub:
             return Version(
                 version=last_release.title,
                 changelog=last_release.body,
-                timestamp=int(last_release.created_at.timestamp()),
+                timestamp=int(pytz.utc.localize(last_release.created_at).timestamp()),
             )
         except StopIteration:
             return None
@@ -206,65 +209,3 @@ class qFlipperFileParser(FileParser):
                 raise Exception(exception_msg)
         self.target = target + "/" + jsonArch
         self.type = file_type
-
-
-class blackmagicFileParser(FileParser):
-    def parse(self, filename: str) -> None:
-        regex = re.compile(
-            r"^blackmagic-firmware-(\w+)-(\w+)-([0-9.]+(-rc)?|(dev-\w+-\w+))\.(\w+)$"
-        )
-        match = regex.match(filename)
-        if not match:
-            exception_msg = f"Unknown file {filename}"
-            logging.exception(exception_msg)
-            raise Exception(exception_msg)
-        self.target = match.group(1)
-        self.type = match.group(2) + "_" + match.group(6)
-
-
-class vgmFileParser(FileParser):
-    def parse(self, filename: str) -> None:
-        regex = re.compile(r"^vgm-(\w+)-(\w+)-([0-9.]+(-rc)?|(dev-\w+-\w+))\.(\w+)$")
-        match = regex.match(filename)
-        if not match:
-            exception_msg = f"Unknown file {filename}"
-            logging.exception(exception_msg)
-            raise Exception(exception_msg)
-        self.target = match.group(1)
-        self.type = match.group(2) + "_" + match.group(6)
-
-
-class busybarFileParser(FileParser):
-    def parse(self, filename: str) -> None:
-        regex = re.compile(
-            r"^busybar-(\w+)-(\w+)-([0-9.]+(-rc)?|(dev-\w+-\w+))\.(\w+)$"
-        )
-        match = regex.match(filename)
-        if not match:
-            # Check if file matches "busybar-fXX-sha256sum.txt" pattern
-            regex_alt = re.compile(r"^busybar-(\w+)-sha256sum\.txt$")
-            match_alt = regex_alt.match(filename)
-            if match_alt:
-                self.target = match_alt.group(1)
-                self.type = "sha256sum_txt"
-                return
-
-            exception_msg = f"Unknown file {filename}"
-            logging.exception(exception_msg)
-            raise Exception(exception_msg)
-        self.target = match.group(1)
-        self.type = match.group(2) + "_" + match.group(6)
-
-
-class flipperOneMcuFileParser(FileParser):
-    def parse(self, filename: str) -> None:
-        regex = re.compile(
-            r"^flipper-one-mcu-(\w+)-(\w+)-([0-9.]+(-rc)?|(dev-\w+-\w+))\.(\w+)$"
-        )
-        match = regex.match(filename)
-        if not match:
-            exception_msg = f"Unknown file {filename}"
-            logging.exception(exception_msg)
-            raise Exception(exception_msg)
-        self.target = match.group(1)
-        self.type = match.group(2) + "_" + match.group(6)

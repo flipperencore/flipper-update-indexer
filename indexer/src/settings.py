@@ -1,6 +1,7 @@
 import os
 from pydantic import BaseModel
-from typing import List
+from typing import List, Union
+import pathlib
 
 
 class Settings(BaseModel):
@@ -10,34 +11,26 @@ class Settings(BaseModel):
     base_url: str
     token: str
     github_org: str
-    gelf_host: str = None
-    gelf_port: str = None
-    kubernetes_namespace: str = None
-    kubernetes_app: str = None
-    kubernetes_container: str = None
-    kubernetes_pod: str = None
+    gelf_host: Union[str, None]
+    gelf_port: Union[str, None]
+    kubernetes_namespace: Union[str, None]
+    kubernetes_app: Union[str, None]
+    kubernetes_container: Union[str, None]
+    kubernetes_pod: Union[str, None]
     firmware_github_token: str
     firmware_github_repo: str
-    qFlipper_github_token: str
-    qFlipper_github_repo: str
-    blackmagic_github_token: str
-    blackmagic_github_repo: str
-    vgm_github_token: str
-    vgm_github_repo: str
-    busybar_github_token: str
-    busybar_github_repo: str
-    flipper_one_mcu_github_token: str
-    flipper_one_mcu_github_repo: str
+    # qFlipper_github_token: str
+    # qFlipper_github_repo: str
     private_paths: List[str]
 
 
 settings = Settings(
     port=8000,
     workers=1,
-    files_dir=os.getenv("INDEXER_FILES_DIR"),
-    base_url=os.getenv("INDEXER_BASE_URL"),
+    files_dir=str(pathlib.Path(__file__).parent.parent.parent / "files"),
+    base_url="https://update.encore-zero.dev/builds",
     token=os.getenv("INDEXER_TOKEN"),
-    github_org=os.getenv("INDEXER_GITHUB_ORGANIZATION"),
+    github_org="flipperencore",
     gelf_host=os.getenv("GELF_HOST"),
     gelf_port=os.getenv("GELF_PORT"),
     kubernetes_namespace=os.getenv("KUBERNETES_NAMESPACE"),
@@ -45,21 +38,8 @@ settings = Settings(
     kubernetes_container=os.getenv("KUBERNETES_CONTAINER"),
     kubernetes_pod=os.getenv("HOSTNAME"),
     firmware_github_token=os.getenv("INDEXER_FIRMWARE_GITHUB_TOKEN"),
-    firmware_github_repo=os.getenv("INDEXER_FIRMWARE_GITHUB_REPO"),
-    qFlipper_github_token=os.getenv("INDEXER_QFLIPPER_GITHUB_TOKEN"),
-    qFlipper_github_repo=os.getenv("INDEXER_QFLIPPER_GITHUB_REPO"),
-    blackmagic_github_token=os.getenv("INDEXER_BLACKMAGIC_GITHUB_TOKEN"),
-    blackmagic_github_repo=os.getenv("INDEXER_BLACKMAGIC_GITHUB_REPO"),
-    vgm_github_token=os.getenv("INDEXER_VGM_GITHUB_TOKEN"),
-    vgm_github_repo=os.getenv("INDEXER_VGM_GITHUB_REPO"),
-    busybar_github_token=os.getenv("INDEXER_BUSYBAR_GITHUB_TOKEN"),
-    busybar_github_repo=os.getenv("INDEXER_BUSYBAR_GITHUB_REPO"),
-    flipper_one_mcu_github_token=os.getenv("INDEXER_FLIPPER_ONE_MCU_GITHUB_TOKEN"),
-    flipper_one_mcu_github_repo=os.getenv("INDEXER_FLIPPER_ONE_MCU_GITHUB_REPO"),
-    private_paths=[
-        "reindex",
-        "uploadfiles",
-        "uploadfilesraw",
-        *os.getenv("INDEXER_PRIVATE_PATHS", "").split(","),
-    ],
+    firmware_github_repo="flipperzero-encore",
+    # qFlipper_github_token=os.getenv("INDEXER_QFLIPPER_GITHUB_TOKEN"),
+    # qFlipper_github_repo="qFlipper",
+    private_paths=["reindex", "uploadfiles", "uploadfilesraw"],
 )

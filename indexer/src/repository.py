@@ -7,10 +7,6 @@ from .models import *
 from .settings import settings
 from .models import (
     qFlipperFileParser,
-    blackmagicFileParser,
-    vgmFileParser,
-    busybarFileParser,
-    flipperOneMcuFileParser,
 )
 
 
@@ -59,7 +55,6 @@ class RepositoryIndex:
         Returns:
             Nothing
         """
-        self.indexer_github.sync_info()
         main_dir = os.path.join(settings.files_dir, self.directory)
         for root, dirs, files in os.walk(main_dir):
             if len(files) == 0:
@@ -102,6 +97,7 @@ class RepositoryIndex:
             Nothing
         """
         try:
+            self.indexer_github.sync_info()
             self.index = parse_github_channels(
                 self.directory, self.file_parser, self.indexer_github
             )
@@ -159,41 +155,13 @@ indexes = {
         github_repo=settings.firmware_github_repo,
         github_org=settings.github_org,
     ),
-    "qFlipper": RepositoryIndex(
-        directory="qFlipper",
-        github_token=settings.qFlipper_github_token,
-        github_repo=settings.qFlipper_github_repo,
-        github_org=settings.github_org,
-        file_parser=qFlipperFileParser,
-    ),
-    "blackmagic-firmware": RepositoryIndex(
-        directory="blackmagic-firmware",
-        github_token=settings.blackmagic_github_token,
-        github_repo=settings.blackmagic_github_repo,
-        github_org=settings.github_org,
-        file_parser=blackmagicFileParser,
-    ),
-    "vgm-firmware": RepositoryIndex(
-        directory="vgm-firmware",
-        github_token=settings.vgm_github_token,
-        github_repo=settings.vgm_github_repo,
-        github_org=settings.github_org,
-        file_parser=vgmFileParser,
-    ),
-    "busybar-firmware": RepositoryIndex(
-        directory="busybar-firmware",
-        github_token=settings.busybar_github_token,
-        github_repo=settings.busybar_github_repo,
-        github_org=settings.github_org,
-        file_parser=busybarFileParser,
-    ),
-    "flipper-one-mcu": RepositoryIndex(
-        directory="flipper-one-mcu",
-        github_token=settings.flipper_one_mcu_github_token,
-        github_repo=settings.flipper_one_mcu_github_repo,
-        github_org=settings.github_org,
-        file_parser=flipperOneMcuFileParser,
-    ),
+    # "qFlipper": RepositoryIndex(
+    #     directory="qFlipper",
+    #     github_token=settings.qFlipper_github_token,
+    #     github_repo=settings.qFlipper_github_repo,
+    #     github_org=settings.github_org,
+    #     file_parser=qFlipperFileParser,
+    # ),
 }
 
-raw_file_upload_directories = ["toolchain"]
+raw_file_upload_directories = []
